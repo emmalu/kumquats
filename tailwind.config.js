@@ -9,9 +9,6 @@ module.exports = {
       colors:{
         'kumquats': '#ff3e00'
       },
-      fontFamily: {
-        sans: ['Raleway'],
-      },
     },
   },
   variants: {},

@@ -1,5 +1,4 @@
 <script>
-	import "typeface-raleway";
 	import { onMount } from 'svelte';
 	import GSheetReader from 'g-sheets-api';
 	let name = "Kumquats";
@@ -81,9 +80,6 @@
 	@tailwind components;
 	@tailwind utilities;
 	
-	body{
-		@apply font-sans;
-	}
 	main{
 		@apply text-center;
 	}
