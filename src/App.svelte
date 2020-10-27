@@ -50,7 +50,7 @@
 					<span class="uppercase">since the beginning</span>
 				</div>
 				<div class="text-center">
-					<h3 class="text-4xl">{booksCurrentMembers.length}</h3>
+					<h3 class="text-5xl">{booksCurrentMembers.length}</h3>
 					<span class="uppercase">lately (since 2017)</span>
 				</div>
 			</div>
