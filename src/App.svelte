@@ -40,7 +40,7 @@
 <content class="p-5 mt-5 text-center">
 	{#if books.length > 0}
 		<h3 class="sm:hidden text-xl font-bold">Total Books Read</h3>
-		<div class="grid grid-rows-1 sm:grid-rows-2 items-center bg-gray-500 my-5 py-2 rounded-full">
+		<div class="grid grid-rows-1 sm:grid-rows-2 items-center bg-gray-500 my-5 py-2 rounded-3xl sm:rounded-full">
 			<div class="hidden sm:block">
 				<h3 class="text-xl font-bold">Total Books Read</h3>
 			</div>
@@ -61,8 +61,8 @@
 			<img class="h-26 object-contain" src={logo} alt="{logo} logo" />
 		</div>
 		<div class="text-left">
-			<h6 class="text-1xl text-kumquats uppercase">{booksThisYear.length } on the shelf <span class="hidden sm:inline">this year</span></h6>
-			<ul class="list-disc list-outside">
+			<h6 class="text-1xl text-kumquats uppercase">on the shelf <span class="hidden sm:inline">this year</span>. . .</h6>
+			<ul class="list-decimal list-outside">
 			{#each booksThisYear as book}
 				{#if book.queue == "yes"}
 					<li class="font-bold text-kumquat">{book.title}</li>
