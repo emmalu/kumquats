@@ -39,17 +39,18 @@
 </main>
 <content class="p-5 mt-5 text-center">
 	{#if books.length > 0}
-		<div class="grid grid-rows-2 items-center bg-gray-500 m-5 p-2 rounded-full">
-			<div>
-				<h2 class="font-bold">Total Books Read</h2>
+		<h3 class="sm:hidden text-xl font-bold">Total Books Read</h3>
+		<div class="grid grid-rows-1 sm:grid-rows-2 items-center bg-gray-500 my-5 py-2 rounded-full">
+			<div class="hidden sm:block">
+				<h3 class="text-xl font-bold">Total Books Read</h3>
 			</div>
-			<div class="grid grid-flow-col">
+			<div class="grid grid-flow-row sm:grid-flow-col pb-10">
 				<div class="text-center">
-					<h3 class="text-2xl">{books.length}</h3>
+					<h3 class="text-5xl">{books.length}</h3>
 					<span class="uppercase">since the beginning</span>
 				</div>
 				<div class="text-center">
-					<h3 class="text-2xl">{booksCurrentMembers.length}</h3>
+					<h3 class="text-4xl">{booksCurrentMembers.length}</h3>
 					<span class="uppercase">lately (since 2017)</span>
 				</div>
 			</div>
@@ -60,17 +61,19 @@
 			<img class="h-26 object-contain" src={logo} alt="{logo} logo" />
 		</div>
 		<div class="text-left">
-			<h6 class="text-1xl text-kumquats uppercase">On the shelf this year</h6>
+			<h6 class="text-1xl text-kumquats uppercase">{booksThisYear.length } on the shelf <span class="hidden sm:inline">this year</span></h6>
+			<ul class="list-disc list-outside">
 			{#each booksThisYear as book}
 				{#if book.queue == "yes"}
-					<p class="font-bold text-kumquat">{book.title}</p>
+					<li class="font-bold text-kumquat">{book.title}</li>
 				{:else}
-					<p>{book.title}</p>
+					<li>{book.title}</li>
 				{/if}
 			{:else}
 				<!-- this block renders when books.length === 0 -->
 				<p class="animate-bounce">loading...</p>
 			{/each}
+			</ul>
 		</div>
 	</div>
 </content>
