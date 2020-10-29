@@ -43,11 +43,11 @@
 		let reviews = await res.json();
 		let res2 = await fetch(`https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json?title=${book}&author=${author}&api-key=S4GPgI6QHdDuodbA9Q0NGGk6BqtQN4vA`);
 		let history = await res2.json();
-		let res3 = await fetch(`https://www.goodreads.com/book/title.xml?author=Arthur+Conan+Doyle&key=CaKtrT6HTbus1r7qFCOUqg&title=Hound+of+the+Baskervilles&format=json`);
+		/* let res3 = await fetch(`https://www.goodreads.com/book/title.xml?author=Arthur+Conan+Doyle&key=CaKtrT6HTbus1r7qFCOUqg&title=Hound+of+the+Baskervilles&format=json`);
 		let text = await res3.text();
 		let parser = new DOMParser();
 		let xml = parser.parseFromString(text,"text/xml");
-		let goodreads = xml.getElementsByTagName("book")[0].childNodes[0].nodeValue;
+		let goodreads = xml.getElementsByTagName("book")[0].childNodes[0].nodeValue; */
 		debugger;
 		modalContents.reviews = reviews.results;
 		modalContents.history = history.results;
