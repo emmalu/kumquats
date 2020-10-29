@@ -1,6 +1,10 @@
 <script>
 	import { onMount } from 'svelte';
 	import GSheetReader from 'g-sheets-api';
+	import Modal from './Components/Modal.svelte';
+	//import { each } from 'svelte/types/runtime/internal/ssr';
+	let showModal = false;
+	let modalContents = {};
 	let name = "Kumquats";
 	let logo = "./kumquats.png";
 	let books = [];
@@ -8,8 +12,6 @@
 	let booksCurrentMembers = [];
 
 	onMount(async () => {
-		//const res = await fetch(`https://jsonplaceholder.typicode.com/photos?_limit=20`);
-		//books = await res.json();
 		const options = {
 			sheetId: '15kjHikPPLUsiaKa1lE9DY8uEoNiNcLjwvRAQcxspI9E',
 			sheetNumber: 1,
@@ -30,6 +32,26 @@
 	});
 	
 	$: document.title = name;
+
+	async function handleModal(book, author) {
+		modalContents.author = author;
+		modalContents.book = book;
+		modalContents.reviews = false;
+		modalContents.history = false;
+		showModal = true;
+		let res = await fetch(`https://api.nytimes.com/svc/books/v3/reviews.json?title=${book}&author=${author}&api-key=S4GPgI6QHdDuodbA9Q0NGGk6BqtQN4vA`);
+		let reviews = await res.json();
+		let res2 = await fetch(`https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json?title=${book}&author=${author}&api-key=S4GPgI6QHdDuodbA9Q0NGGk6BqtQN4vA`);
+		let history = await res2.json();
+		let res3 = await fetch(`https://www.goodreads.com/book/title.xml?author=Arthur+Conan+Doyle&key=CaKtrT6HTbus1r7qFCOUqg&title=Hound+of+the+Baskervilles&format=json`);
+		let text = await res3.text();
+		let parser = new DOMParser();
+		let xml = parser.parseFromString(text,"text/xml");
+		let goodreads = xml.getElementsByTagName("book")[0].childNodes[0].nodeValue;
+		debugger;
+		modalContents.reviews = reviews.results;
+		modalContents.history = history.results;
+	}
 </script>
 
 <main>
@@ -65,9 +87,9 @@
 			<ul class="list-decimal list-outside">
 			{#each booksThisYear as book}
 				{#if book.queue == "yes"}
-					<li class="font-bold text-kumquat">{book.title}</li>
+					<li on:click="{handleModal(book.title, book.author)}" class="font-bold text-kumquat cursor-pointer hover:text-kumquats">{book.title}</li>
 				{:else}
-					<li>{book.title}</li>
+					<li on:click="{handleModal(book.title, book.author)}" class="cursor-pointer hover:text-kumquats">{book.title}</li>
 				{/if}
 			{:else}
 				<!-- this block renders when books.length === 0 -->
@@ -77,6 +99,33 @@
 		</div>
 	</div>
 </content>
+{#if showModal}
+	<Modal on:close="{() => showModal = false}">
+		<h2 slot="header">
+			<p class="font-bold">{modalContents.book}</p> by
+			<small class="text-kumquats">{modalContents.author}</small>
+		</h2>
+		<div>
+			{#if !modalContents.history && !modalContents.reviews}
+				<p class="animate-bounce text-gray-700 pt-5">loading...</p>
+			{:else}
+				{#if modalContents.history.length > 0}
+					<p class="pt-5 text-sm text-gray-700 font-extrabold">NYT Details</p>
+					{#each modalContents.history as rec}
+						<p>Publisher: {rec.publisher}</p>
+						<p>{rec.description}</p>
+					{/each}
+				{/if}
+				{#if modalContents.reviews.length > 0}
+					<p class="pt-5 text-sm text-gray-700 font-extrabold">NYT Reviews</p>
+					{#each modalContents.reviews as review}
+						<p><a href="{review.url}" target="_blank">{review.publication_dt}</a></p>
+					{/each}
+				{/if}
+			{/if}
+		</div>
+	</Modal>
+{/if}
 
 <style global>
 	@tailwind base;
