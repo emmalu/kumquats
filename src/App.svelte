@@ -34,7 +34,9 @@
 
 	async function handleModal(book, author) {
 		modalContents.author = author;
-		modalContents.book = book;
+		modalContents.book = book; 
+		modalContents.grBookLink = `https://www.goodreads.com/search?utf8=%E2%9C%93&query=${book}`;
+		modalContents.grAuthorLink = `https://www.goodreads.com/search?utf8=%E2%9C%93&query=${author}`;
 		modalContents.reviews = false;
 		modalContents.history = false;
 		showModal = true;
@@ -42,12 +44,6 @@
 		let reviews = await res.json();
 		let res2 = await fetch(`https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json?title=${book}&author=${author}&api-key=S4GPgI6QHdDuodbA9Q0NGGk6BqtQN4vA`);
 		let history = await res2.json();
-		/* let res3 = await fetch(`https://www.goodreads.com/book/title.xml?author=Arthur+Conan+Doyle&key=CaKtrT6HTbus1r7qFCOUqg&title=Hound+of+the+Baskervilles&format=json`);
-		let text = await res3.text();
-		let parser = new DOMParser();
-		let xml = parser.parseFromString(text,"text/xml");
-		let goodreads = xml.getElementsByTagName("book")[0].childNodes[0].nodeValue; */
-		//debugger;
 		modalContents.reviews = reviews.results;
 		modalContents.history = history.results;
 	}
@@ -111,6 +107,11 @@
 			{#if !modalContents.history && !modalContents.reviews}
 				<p class="animate-bounce text-gray-700 pt-5">loading...</p>
 			{:else}
+				<div class="pt-2 pb-1">
+					<p class="text-sm text-gray-700 font-extrabold">Open GoodReads Search</p>
+					<button class="bg-white hover:bg-green-200 text-gray-700 font-semibold py-2 px-4 border border-gray-400 rounded shadow" on:click="{window.open(modalContents.grBookLink, "_blank")}">By Book Title</button>
+					<button class="bg-white hover:bg-green-200 text-gray-700 font-semibold py-2 px-4 border border-gray-400 rounded shadow" on:click="{window.open(modalContents.grAuthorLink, "_blank")}">By Author</button>
+				</div>
 				{#if modalContents.history.length > 0}
 					<p class="pt-5 text-sm text-gray-700 font-extrabold">NYT Details</p>
 					{#each modalContents.history as rec}

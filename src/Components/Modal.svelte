@@ -48,7 +48,7 @@
 	<hr>
 
 	<!-- svelte-ignore a11y-autofocus -->
-	<button autofocus on:click={close} class="text-right mt-10">Close</button>
+	<button autofocus on:click={close} class="mt-4 bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow float-right">Close</button>
 </div>
 
 <style>
