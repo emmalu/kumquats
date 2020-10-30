@@ -7,8 +7,6 @@
 	let name = "Kumquats";
 	let logo = "./kumquats.png";
 	let books = {};
-	let booksThisYear = [];
-	let booksCurrentMembers = [];
 
 	onMount(async () => {
 		const options = {
@@ -62,29 +60,30 @@
 </main>
 <content class="text-center">
 	{#if books.all}
-		<h3 class="sm:hidden text-xl font-bold">Total Books Read</h3>
-		<div class="grid grid-rows-1 sm:grid-rows-2 items-center bg-gray-500 my-2 py-1 rounded-3xl sm:rounded-full">
-			<div class="hidden sm:block">
-				<h3 class="text-xl font-bold">Total Books Read</h3>
-			</div>
+		<h3 class="text-xl font-bold">By the Books</h3>
+		<div class="grid grid-rows-1 items-center bg-gray-500 my-2 py-2 rounded-3xl md:rounded-full">
 			<div class="grid grid-flow-row sm:grid-flow-col pb-5">
 				<div class="text-center">
 					<h3 class="text-5xl">{books.all.length - books.leftThisYear.length}</h3>
-					<span class="uppercase">since the beginning</span>
+					<span class="uppercase">read since the beginning</span>
 				</div>
 				<div class="text-center">
-					<h3 class="text-5xl">{books.currentMembers.length}</h3>
-					<span class="uppercase">lately (since 2017)</span>
+					<h3 class="text-5xl">{books.currentMembers.length - books.leftThisYear.length}</h3>
+					<span class="uppercase">read by current members</span>
+				</div>
+				<div class="text-center">
+					<h3 class="text-5xl">{books.leftThisYear.length}</h3>
+					<span class="uppercase">this year's queue</span>
 				</div>
 			</div>
 		</div>
 	{/if}
-	<div class="grid grid-cols-2 items-center">
-		<div>
+	<div class="grid grid-cols-1 sm:grid-cols-2 items-center">
+		<div class="hidden sm:block">
 			<img class="h-26 object-contain" src={logo} alt="{logo} logo" />
 		</div>
-		<div class="text-left">
-			<h6 class="text-1xl text-kumquats uppercase">on the shelf <span class="hidden sm:inline">this year</span>. . .</h6>
+		<div class="text-center sm:text-left">
+			<h6 class="text-1xl text-kumquats uppercase">this year's shelf . . .</h6>
 			<ul class="list-decimal list-outside">
 			{#if books.allThisYear}
 				{#each (books.allThisYear) as book}
@@ -96,6 +95,9 @@
 				{/each}
 			{/if}
 			</ul>
+			<div class="block sm:hidden">
+				<img class="h-26 object-contain" src={logo} alt="{logo} logo" />
+			</div>
 		</div>
 	</div>
 </content>
