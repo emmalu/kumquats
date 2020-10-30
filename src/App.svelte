@@ -61,7 +61,7 @@
 <content class="text-center">
 	{#if books.all}
 		<h3 class="text-xl font-bold">By the Books</h3>
-		<div class="grid grid-rows-1 items-center bg-gray-500 my-2 py-2 rounded-3xl md:rounded-full">
+		<div class="grid grid-rows-1 items-center bg-gray-500 my-1 py-2 rounded-3xl md:rounded-full">
 			<div class="grid grid-flow-row sm:grid-flow-col pb-5">
 				<div class="text-center">
 					<h3 class="text-5xl">{books.all.length - books.leftThisYear.length}</h3>
@@ -83,14 +83,14 @@
 			<img class="h-26 object-contain" src={logo} alt="{logo} logo" />
 		</div>
 		<div class="text-center sm:text-left">
-			<h6 class="text-1xl text-kumquats uppercase">this year's shelf . . .</h6>
+			<h6 class="text-1xl text-kumquats uppercase pb-2">this year's shelf . . .</h6>
 			<ul class="list-decimal list-outside">
 			{#if books.allThisYear}
 				{#each (books.allThisYear) as book}
 					{#if book.queue == "yes"}
-						<li on:click="{handleModal(book.title, book.author)}" class="mb-2 sm:mb-4 font-bold text-kumquat cursor-pointer hover:text-kumquats">{book.title}</li>
+						<li on:click="{handleModal(book.title, book.author)}" class="mb-2 sm:mb-3 lg:mb-1 font-bold text-kumquat cursor-pointer hover:text-kumquats">{book.title}</li>
 					{:else}
-						<li on:click="{handleModal(book.title, book.author)}" class="mb-2 sm:mb-4 cursor-pointer hover:text-kumquats">{book.title}</li>
+						<li on:click="{handleModal(book.title, book.author)}" class="mb-2 sm:mb-3 lg:mb-1 cursor-pointer hover:text-kumquats">{book.title}</li>
 					{/if}
 				{/each}
 			{/if}
