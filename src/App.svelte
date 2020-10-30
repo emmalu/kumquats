@@ -88,9 +88,9 @@
 			{#if books.allThisYear}
 				{#each (books.allThisYear) as book}
 					{#if book.queue == "yes"}
-						<li on:click="{handleModal(book.title, book.author)}" class="font-bold text-kumquat cursor-pointer hover:text-kumquats">{book.title}</li>
+						<li on:click="{handleModal(book.title, book.author)}" class="mb-2 sm:mb-4 font-bold text-kumquat cursor-pointer hover:text-kumquats">{book.title}</li>
 					{:else}
-						<li on:click="{handleModal(book.title, book.author)}" class="cursor-pointer hover:text-kumquats">{book.title}</li>
+						<li on:click="{handleModal(book.title, book.author)}" class="mb-2 sm:mb-4 cursor-pointer hover:text-kumquats">{book.title}</li>
 					{/if}
 				{/each}
 			{/if}
