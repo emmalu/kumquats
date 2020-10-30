@@ -2,12 +2,11 @@
 	import { onMount } from 'svelte';
 	import GSheetReader from 'g-sheets-api';
 	import Modal from './Components/Modal.svelte';
-	//import { each } from 'svelte/types/runtime/internal/ssr';
 	let showModal = false;
 	let modalContents = {};
 	let name = "Kumquats";
 	let logo = "./kumquats.png";
-	let books = [];
+	let books = {};
 	let booksThisYear = [];
 	let booksCurrentMembers = [];
 
@@ -18,16 +17,18 @@
 			returnAllResults: true,
 		}
 		GSheetReader(options, results => {
-			books = results;
+			books.all = results;
 			let d = new Date();
 			let thisYear = d.getFullYear();
-			booksThisYear = books.filter(function(book){
+			books.allThisYear = results.filter(function(book){
 				return parseInt(book.year) === thisYear;
 			});
-			booksCurrentMembers = books.filter(function(book){
+			books.leftThisYear = results.filter(function(book){
+				return parseInt(book.year) === thisYear && book.queue == "yes";
+			});
+			books.currentMembers = results.filter(function(book){
 				return parseInt(book.year) >= 2017;
 			});
-			//debugger;
 		});
 	});
 	
@@ -48,7 +49,7 @@
 		let parser = new DOMParser();
 		let xml = parser.parseFromString(text,"text/xml");
 		let goodreads = xml.getElementsByTagName("book")[0].childNodes[0].nodeValue; */
-		debugger;
+		//debugger;
 		modalContents.reviews = reviews.results;
 		modalContents.history = history.results;
 	}
@@ -57,22 +58,22 @@
 <main>
 	<h1 class="text-kumquats uppercase">Hello {name}</h1>
 	<p>Friends who read together, <strong>stay</strong> together.</p>
-	<div class="bg-gray-800 h-1"></div>
+	<div class="bg-gray-800 h-1 my-1"></div>
 </main>
-<content class="p-5 mt-5 text-center">
-	{#if books.length > 0}
+<content class="text-center">
+	{#if books.all}
 		<h3 class="sm:hidden text-xl font-bold">Total Books Read</h3>
-		<div class="grid grid-rows-1 sm:grid-rows-2 items-center bg-gray-500 my-5 py-2 rounded-3xl sm:rounded-full">
+		<div class="grid grid-rows-1 sm:grid-rows-2 items-center bg-gray-500 my-2 py-1 rounded-3xl sm:rounded-full">
 			<div class="hidden sm:block">
 				<h3 class="text-xl font-bold">Total Books Read</h3>
 			</div>
-			<div class="grid grid-flow-row sm:grid-flow-col pb-10">
+			<div class="grid grid-flow-row sm:grid-flow-col pb-5">
 				<div class="text-center">
-					<h3 class="text-5xl">{books.length}</h3>
+					<h3 class="text-5xl">{books.all.length - books.leftThisYear.length}</h3>
 					<span class="uppercase">since the beginning</span>
 				</div>
 				<div class="text-center">
-					<h3 class="text-5xl">{booksCurrentMembers.length}</h3>
+					<h3 class="text-5xl">{books.currentMembers.length}</h3>
 					<span class="uppercase">lately (since 2017)</span>
 				</div>
 			</div>
@@ -85,16 +86,15 @@
 		<div class="text-left">
 			<h6 class="text-1xl text-kumquats uppercase">on the shelf <span class="hidden sm:inline">this year</span>. . .</h6>
 			<ul class="list-decimal list-outside">
-			{#each booksThisYear as book}
-				{#if book.queue == "yes"}
-					<li on:click="{handleModal(book.title, book.author)}" class="font-bold text-kumquat cursor-pointer hover:text-kumquats">{book.title}</li>
-				{:else}
-					<li on:click="{handleModal(book.title, book.author)}" class="cursor-pointer hover:text-kumquats">{book.title}</li>
-				{/if}
-			{:else}
-				<!-- this block renders when books.length === 0 -->
-				<p class="animate-bounce">loading...</p>
-			{/each}
+			{#if books.allThisYear}
+				{#each (books.allThisYear) as book}
+					{#if book.queue == "yes"}
+						<li on:click="{handleModal(book.title, book.author)}" class="font-bold text-kumquat cursor-pointer hover:text-kumquats">{book.title}</li>
+					{:else}
+						<li on:click="{handleModal(book.title, book.author)}" class="cursor-pointer hover:text-kumquats">{book.title}</li>
+					{/if}
+				{/each}
+			{/if}
 			</ul>
 		</div>
 	</div>
