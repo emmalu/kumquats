@@ -108,7 +108,7 @@
 			<img class="h-26 object-contain" src={logo} alt="{logo} logo" />
 		</div>
 		<div class="text-center sm:text-left">
-			<h6 class="text-1xl text-kumquats uppercase pb-2">this year's shelf</h6>
+			<h6 class="text-1xl text-kumquats uppercase py-2">this year's shelf</h6>
 			<ul class="list-decimal list-inside">
 			{#if books.allThisYear}
 				{#each (books.allThisYear) as book}
@@ -127,7 +127,7 @@
 	</div>
 	<hr>
 	<div class="text-center pb-2">
-		<h6 class="text-1xl text-kumquats uppercase pt-2">read in years past</h6>
+		<h6 class="text-1xl text-kumquats uppercase py-2">shelf from years past</h6>
 		{#if books.allByYears}
 			{#each (books.allByYears) as year}
 			<div class="border-solid border-2 border-gray-700 py-2 shadow-lg rounded-xl cursor-pointer">
@@ -135,7 +135,7 @@
 					{year.count} books in <span class="font-extrabold">{year.year}</span></h6>
 				<ul class="list-none list-inside text-left hidden" id="list{year.year}">
 				{#each year.books as book}
-					<li class="border-solid border-2 border-gray-200 py-2 pl-2 cursor-pointer hover:text-kumquats motion-safe:animate-bounce shadow-inner" id="{year.year}{book.title}">{book.title}</li>
+					<li class="border-solid border-2 border-gray-200 py-2 pl-2 cursor-pointer hover:text-kumquats motion-safe:animate-bounce shadow-inner" id="{year.year}{book.title}">{book.title} <small class="text-kumquats font-thin"><em>by {book.author}</em></small></li>
 				{/each}
 				</ul>
 			</div>
