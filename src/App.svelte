@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import GSheetReader from 'g-sheets-api';
 	import Modal from './Components/Modal.svelte';
+	
 	let showModal = false;
 	let modalContents = {};
 	let name = "Kumquats";
@@ -27,6 +28,23 @@
 			books.currentMembers = results.filter(function(book){
 				return parseInt(book.year) >= 2017;
 			});
+			let theYears = [...new Set(results.map(book => parseInt(book.year)))];
+			let booksByYear = [];
+			theYears.forEach(year => {
+				if(year != thisYear){
+					let thisYears = results.filter(function(book){
+						return parseInt(book.year) == year;
+					});
+					booksByYear.push({
+						year: year,
+						books: thisYears,
+						count: thisYears.length,
+						visible: false
+					});
+				}
+			});
+			books.allByYears = booksByYear;
+			console.log(books);
 		});
 	});
 	
@@ -46,6 +64,16 @@
 		let history = await res2.json();
 		modalContents.reviews = reviews.results;
 		modalContents.history = history.results;
+	}
+	function show(year){
+		let id = "list"+year;
+		let collapseList = document.getElementById(id);
+		if(collapseList.classList.contains("hidden")){
+			collapseList.classList.remove("hidden");
+		}
+		else{
+			collapseList.classList.add("hidden");
+		}
 	}
 </script>
 
@@ -79,14 +107,14 @@
 			<img class="h-26 object-contain" src={logo} alt="{logo} logo" />
 		</div>
 		<div class="text-center sm:text-left">
-			<h6 class="text-1xl text-kumquats uppercase pb-2">this year's shelf . . .</h6>
-			<ul class="list-decimal list-outside">
+			<h6 class="text-1xl text-kumquats uppercase pb-2">this year's shelf</h6>
+			<ul class="list-decimal list-inside">
 			{#if books.allThisYear}
 				{#each (books.allThisYear) as book}
 					{#if book.queue == "yes"}
-						<li on:click="{handleModal(book.title, book.author)}" class="mb-2 sm:mb-3 lg:mb-1 font-bold text-kumquat cursor-pointer hover:text-kumquats">{book.title}</li>
+						<li on:click="{handleModal(book.title, book.author)}" class="border-solid border-1 border-gray-700 py-2 pl-2 shadow-md mb-2 sm:mb-3 lg:mb-1 font-bold text-kumquat cursor-pointer hover:text-kumquats">{book.title}</li>
 					{:else}
-						<li on:click="{handleModal(book.title, book.author)}" class="mb-2 sm:mb-3 lg:mb-1 cursor-pointer hover:text-kumquats">{book.title}</li>
+						<li on:click="{handleModal(book.title, book.author)}" class="border-solid border-1 border-gray-700 py-2 pl-2 shadow-md mb-2 sm:mb-3 lg:mb-1 cursor-pointer hover:text-kumquats">{book.title}</li>
 					{/if}
 				{/each}
 			{/if}
@@ -95,6 +123,23 @@
 				<img class="h-26 object-contain" src={logo} alt="{logo} logo" />
 			</div>
 		</div>
+	</div>
+	<hr>
+	<div class="text-center sm:text-left pb-2">
+		<h6 class="text-1xl text-kumquats uppercase pt-2">books from years past</h6>
+		{#if books.allByYears}
+			{#each (books.allByYears) as year}
+			<div class="text-center border-solid border-2 border-gray-700 py-2 shadow-lg rounded-xl cursor-pointer">
+				<h6 class="py-2" id="{year.year}" on:click={show(year.year)}>
+					<span class="font-extrabold">{year.year}</span> ({year.count} books)</h6>
+				<ul class="list-none list-inside text-left hidden" id="list{year.year}">
+				{#each year.books as book}
+					<li class="border-solid border-2 border-gray-200 py-2 pl-2 cursor-pointer hover:text-kumquats motion-safe:animate-bounce">{book.title}</li>
+				{/each}
+				</ul>
+			</div>
+			{/each}
+		{/if}
 	</div>
 </content>
 {#if showModal}
