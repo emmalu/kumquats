@@ -29,6 +29,7 @@
 				return parseInt(book.year) >= 2017;
 			});
 			let theYears = [...new Set(results.map(book => parseInt(book.year)))];
+			theYears.sort(function(a, b){return b-a}); 
 			let booksByYear = [];
 			theYears.forEach(year => {
 				if(year != thisYear){
@@ -125,21 +126,23 @@
 		</div>
 	</div>
 	<hr>
-	<div class="text-center sm:text-left pb-2">
-		<h6 class="text-1xl text-kumquats uppercase pt-2">books from years past</h6>
+	<div class="text-center pb-2">
+		<h6 class="text-1xl text-kumquats uppercase pt-2">read in years past</h6>
 		{#if books.allByYears}
 			{#each (books.allByYears) as year}
-			<div class="text-center border-solid border-2 border-gray-700 py-2 shadow-lg rounded-xl cursor-pointer">
+			<div class="border-solid border-2 border-gray-700 py-2 shadow-lg rounded-xl cursor-pointer">
 				<h6 class="py-2" id="{year.year}" on:click={show(year.year)}>
-					<span class="font-extrabold">{year.year}</span> ({year.count} books)</h6>
+					{year.count} books in <span class="font-extrabold">{year.year}</span></h6>
 				<ul class="list-none list-inside text-left hidden" id="list{year.year}">
 				{#each year.books as book}
-					<li class="border-solid border-2 border-gray-200 py-2 pl-2 cursor-pointer hover:text-kumquats motion-safe:animate-bounce">{book.title}</li>
+					<li class="border-solid border-2 border-gray-200 py-2 pl-2 cursor-pointer hover:text-kumquats motion-safe:animate-bounce shadow-inner" id="{year.year}{book.title}">{book.title}</li>
 				{/each}
 				</ul>
 			</div>
 			{/each}
 		{/if}
+	</div>
+	<div class="pb-2">
 	</div>
 </content>
 {#if showModal}
