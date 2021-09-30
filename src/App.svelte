@@ -1,54 +1,57 @@
 <script>
 	import { onMount } from 'svelte';
-	import GSheetReader from 'g-sheets-api';
 	import Modal from './Components/Modal.svelte';
 	
-	let showModal = false;
-	let modalContents = {};
-	let name = "Kumquats";
-	let logo = "./kumquats.png";
-	let books = {};
+	const showModal = false;
+	const modalContents = {};
+	const name = "Kumquats";
+	const logo = "./kumquats.png";
+	const books = {};
 
 	onMount(async () => {
-		const options = {
-			sheetId: '15kjHikPPLUsiaKa1lE9DY8uEoNiNcLjwvRAQcxspI9E',
-			sheetNumber: 1,
-			returnAllResults: true,
-		}
-		GSheetReader(options, results => {
-			books.all = results;
-			let d = new Date();
-			let thisYear = d.getFullYear();
-			books.allThisYear = results.filter(function(book){
-				return parseInt(book.year) === thisYear;
+		debugger;
+		fetch(`https://la-paix.herokuapp.com/kumquats`)
+			.then(response => { 
+				if(response.ok) return response.json();
+			}).then(json => {
+				console.log(json);
+				parseData(json.sheetData);
 			});
-			books.leftThisYear = results.filter(function(book){
-				return parseInt(book.year) === thisYear && book.queue == "yes";
-			});
-			books.currentMembers = results.filter(function(book){
-				return parseInt(book.year) >= 2017;
-			});
-			let theYears = [...new Set(results.map(book => parseInt(book.year)))];
-			theYears.sort(function(a, b){return b-a}); 
-			let booksByYear = [];
-			theYears.forEach(year => {
-				if(year != thisYear){
-					let thisYears = results.filter(function(book){
-						return parseInt(book.year) == year;
-					});
-					booksByYear.push({
-						year: year,
-						books: thisYears,
-						count: thisYears.length,
-						visible: false
-					});
-				}
-			});
-			books.allByYears = booksByYear;
-			console.log(books);
-		});
 	});
 	
+	function parseData(sheet_data) {
+		let results = sheet_data.rows;
+		books.all = results;
+		let d = new Date();
+		let thisYear = d.getFullYear();
+		books.allThisYear = results.filter(function(book){
+			return parseInt(book.year) === thisYear;
+		});
+		books.leftThisYear = results.filter(function(book){
+			return parseInt(book.year) === thisYear && book.queue == "yes";
+		});
+		books.currentMembers = results.filter(function(book){
+			return parseInt(book.year) >= 2017;
+		});
+		let theYears = [...new Set(results.map(book => parseInt(book.year)))];
+		theYears.sort(function(a, b){return b-a}); 
+		let booksByYear = [];
+		theYears.forEach(year => {
+			if(year != thisYear){
+				let thisYears = results.filter(function(book){
+					return parseInt(book.year) == year;
+				});
+				booksByYear.push({
+					year: year,
+					books: thisYears,
+					count: thisYears.length,
+					visible: false
+				});
+			}
+		});
+		books.allByYears = booksByYear;
+		console.log(books);
+	}
 	$: document.title = name;
 
 	async function handleModal(book, author) {
@@ -86,7 +89,7 @@
 <content class="text-center">
 	{#if books.all}
 		<h3 class="text-xl font-bold">By the Books</h3>
-		<div class="grid grid-rows-1 items-center bg-gray-500 my-1 py-2 rounded-3xl md:rounded-full">
+		<div class="grid grid-rows-1 items-center bg-gray-300 my-1 py-2 rounded-3xl md:rounded-full">
 			<div class="grid grid-flow-row sm:grid-flow-col pb-5">
 				<div class="text-center">
 					<h3 class="text-5xl">{books.all.length - books.leftThisYear.length}</h3>
@@ -185,6 +188,13 @@
 	
 	main{
 		@apply text-center;
+	}
+	main,
+	.map-view {
+		padding: 0;
+		margin: 0;
+		max-height: 100%;
+		width: 100%;
 	}
 	h1 {
 		@apply text-5xl;
