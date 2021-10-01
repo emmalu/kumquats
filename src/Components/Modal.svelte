@@ -41,7 +41,7 @@
 
 <div class="modal-background" on:click={close}></div>
 
-<div class="modal" role="dialog" aria-modal="true" bind:this={modal}>
+<div class="modal" role="dialog" aria-modal="true" href="#" bind:this={modal}>
 	<slot name="header"></slot>
 	<hr>
 	<slot></slot>
