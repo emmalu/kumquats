@@ -2,19 +2,18 @@
 	import { onMount } from 'svelte';
 	import Modal from './Components/Modal.svelte';
 	
-	const showModal = false;
+	let showModal = false;
 	const modalContents = {};
 	const name = "Kumquats";
 	const logo = "./kumquats.png";
 	const books = {};
 
 	onMount(async () => {
-		debugger;
 		fetch(`https://la-paix.herokuapp.com/kumquats`)
 			.then(response => { 
 				if(response.ok) return response.json();
 			}).then(json => {
-				console.log(json);
+				//console.log(json);
 				parseData(json.sheetData);
 			});
 	});
@@ -50,7 +49,7 @@
 			}
 		});
 		books.allByYears = booksByYear;
-		console.log(books);
+		//console.log(books);
 	}
 	$: document.title = name;
 
@@ -181,7 +180,7 @@
 	</Modal>
 {/if}
 
-<style global>
+<style global lang="postcss">
 	@tailwind base;
 	@tailwind components;
 	@tailwind utilities;
