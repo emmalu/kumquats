@@ -142,7 +142,9 @@
 					{year.count} books in <span class="font-extrabold">{year.year}</span></h6>
 				<ul class="list-none list-inside text-left hidden" id="list{year.year}">
 				{#each year.books as book}
-					<li class="border-solid border-2 border-gray-200 py-2 pl-2 cursor-pointer hover:text-kumquats motion-safe:animate-bounce shadow-inner" id="{year.year}{book.title}">{book.title} <small class="text-kumquats font-thin"><em>by {book.author}</em></small></li>
+					<li on:click="{handleModal(book.title, book.author)}" class="border-solid border-2 border-gray-200 py-2 pl-2 cursor-pointer hover:text-kumquats motion-safe:animate-bounce shadow-inner" id="{year.year}{book.title}">
+						{book.title} <small class="text-kumquats font-thin"><em>by {book.author}</em></small>
+					</li>
 				{/each}
 				</ul>
 			</div>
@@ -174,21 +176,26 @@
 							First Published in <span class="font-extrabold">{modalContents.facts[0].first_publish_year}</span>
 						</p>
 					{/if}
-					{#if modalContents.facts[0].publish_place}
+					{#if modalContents.facts[0].publish_place && modalContents.facts[0].publish_place?.length < 6}
 						<p>
 							Places Published: <span class="font-extrabold">{modalContents.facts[0].publish_place}</span>
 						</p>
 					{/if}
-					{#if modalContents.facts[0].language.length > 1}
+					{#if modalContents.facts[0].language && modalContents.facts[0].language?.length > 1}
 						<p>Available
 							in <span class="font-extrabold">{modalContents.facts[0].language.length} languages</span>
 						</p>
+					{/if}			
+					
+					{#if modalContents.facts[0].publisher && modalContents.facts[0].publisher?.length < 6}
+						<p class="pt-5 text-kumquats">Publishers</p>
+						<span>{modalContents.facts[0].publisher.join(', ')}</span>
+					{:else}
+						<p class="pt-5 text-kumquats">>{(Math.ceil(modalContents.facts[0].publisher.length / 10) * 10)} Publishers!</p>
 					{/if}
-					<p class="pt-5 text-kumquats">Publishers</p>
-					<span>{modalContents.facts[0].publisher.join(', ')}</span>
 				{/if}
 				{#if modalContents.history.length > 0}
-					<p class="pt-5 text-sm text-gray-700 font-extrabold">NYT Details</p>
+					<p class="pt-5 text-sm text-gray-700 font-extrabold">Book Details by the NYT</p>
 					{#each modalContents.history as rec}
 						<p>Publisher: {rec.publisher}</p>
 						<p>{rec.description}</p>
