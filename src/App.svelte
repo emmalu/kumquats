@@ -60,13 +60,16 @@
 		modalContents.grAuthorLink = `https://www.goodreads.com/search?utf8=%E2%9C%93&query=${author}`;
 		modalContents.reviews = false;
 		modalContents.history = false;
-		showModal = true;
 		let res = await fetch(`https://api.nytimes.com/svc/books/v3/reviews.json?title=${book}&author=${author}&api-key=S4GPgI6QHdDuodbA9Q0NGGk6BqtQN4vA`);
 		let reviews = await res.json();
 		let res2 = await fetch(`https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json?title=${book}&author=${author}&api-key=S4GPgI6QHdDuodbA9Q0NGGk6BqtQN4vA`);
 		let history = await res2.json();
+		let res3 = await fetch(`https://openlibrary.org/search.json?title=${book}&author=${author}`);
+		let openLibraryFacts = await res3.json();
+		showModal = true;
 		modalContents.reviews = reviews.results;
 		modalContents.history = history.results;
+		modalContents.facts = openLibraryFacts.docs;
 	}
 	function show(year){
 		let id = "list"+year;
@@ -104,6 +107,8 @@
 				</div>
 			</div>
 		</div>
+	{:else if !books.all}
+		<p class="animate-bounce text-gray-700 pt-5">loading...</p>
 	{/if}
 	<div class="grid grid-cols-1 sm:grid-cols-2 items-center">
 		<div class="hidden sm:block">
@@ -154,7 +159,7 @@
 			<small class="text-kumquats">{modalContents.author}</small>
 		</h2>
 		<div>
-			{#if !modalContents.history && !modalContents.reviews}
+			{#if !modalContents.history && !modalContents.reviews && !modalContents.facts}
 				<p class="animate-bounce text-gray-700 pt-5">loading...</p>
 			{:else}
 				<div class="pt-2 pb-1">
@@ -162,6 +167,26 @@
 					<button class="bg-white hover:bg-green-200 text-gray-700 font-semibold py-2 px-4 border border-gray-400 rounded shadow" on:click="{window.open(modalContents.grBookLink, "_blank")}">By Book Title</button>
 					<button class="bg-white hover:bg-green-200 text-gray-700 font-semibold py-2 px-4 border border-gray-400 rounded shadow" on:click="{window.open(modalContents.grAuthorLink, "_blank")}">By Author</button>
 				</div>
+				{#if modalContents.facts.length > 0}
+					<p class="pt-5 text-sm text-gray-700 font-extrabold">Open Library Facts</p>
+					{#if modalContents.facts[0].first_publish_year}
+						<p>
+							First Published in <span class="font-extrabold">{modalContents.facts[0].first_publish_year}</span>
+						</p>
+					{/if}
+					{#if modalContents.facts[0].publish_place}
+						<p>
+							Places Published: <span class="font-extrabold">{modalContents.facts[0].publish_place}</span>
+						</p>
+					{/if}
+					{#if modalContents.facts[0].language.length > 1}
+						<p>Available
+							in <span class="font-extrabold">{modalContents.facts[0].language.length} languages</span>
+						</p>
+					{/if}
+					<p class="pt-5 text-kumquats">Publishers</p>
+					<span>{modalContents.facts[0].publisher.join(', ')}</span>
+				{/if}
 				{#if modalContents.history.length > 0}
 					<p class="pt-5 text-sm text-gray-700 font-extrabold">NYT Details</p>
 					{#each modalContents.history as rec}
