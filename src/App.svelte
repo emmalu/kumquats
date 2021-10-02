@@ -53,9 +53,23 @@
 	}
 	$: document.title = name;
 
+	function clearModal(){
+		modalContents.author = '';
+		modalContents.book = ''; 
+		modalContents.grBookLink = '';
+		modalContents.grAuthorLink = '';
+		modalContents.reviews = false;
+		modalContents.history = false;
+		modalContents.facts = false;
+	}
+
 	async function handleModal(book, author) {
+		if (modalContents.author !== author){
+			clearModal();
+		}
 		modalContents.author = author;
 		modalContents.book = book; 
+		showModal = true;
 		modalContents.grBookLink = `https://www.goodreads.com/search?utf8=%E2%9C%93&query=${book}`;
 		modalContents.grAuthorLink = `https://www.goodreads.com/search?utf8=%E2%9C%93&query=${author}`;
 		modalContents.reviews = false;
@@ -66,10 +80,17 @@
 		let history = await res2.json();
 		let res3 = await fetch(`https://openlibrary.org/search.json?title=${book}&author=${author}`);
 		let openLibraryFacts = await res3.json();
-		showModal = true;
 		modalContents.reviews = reviews.results;
 		modalContents.history = history.results;
-		modalContents.facts = openLibraryFacts.docs;
+		let facts = await openLibraryFacts.docs;
+		if(facts.length > 1){
+			let oldestData = facts.reduce(function(prev, curr) {
+				return prev.first_publish_year < curr.first_publish_year ? prev : curr;
+			});
+			modalContents.facts = oldestData;
+		} else{
+			modalContents.facts = facts[0];
+		}
 	}
 	function show(year){
 		let id = "list"+year;
@@ -143,7 +164,7 @@
 				<ul class="list-none list-inside text-left hidden" id="list{year.year}">
 				{#each year.books as book}
 					<li on:click="{handleModal(book.title, book.author)}" class="border-solid border-2 border-gray-200 py-2 pl-2 cursor-pointer hover:text-kumquats motion-safe:animate-bounce shadow-inner" id="{year.year}{book.title}">
-						{book.title} <small class="text-kumquats font-thin"><em>by {book.author}</em></small>
+						{book.title} <small class="text-kumquats"><em>by <strong>{book.author}</strong></em></small>
 					</li>
 				{/each}
 				</ul>
@@ -162,36 +183,36 @@
 		</h2>
 		<div>
 			{#if !modalContents.history && !modalContents.reviews && !modalContents.facts}
-				<p class="animate-bounce text-gray-700 pt-5">loading...</p>
+				<p class="animate-bounce text-gray-700 pt-5">Searching...</p>
 			{:else}
 				<div class="pt-2 pb-1">
 					<p class="text-sm text-gray-700 font-extrabold">Open GoodReads Search</p>
 					<button class="bg-white hover:bg-green-200 text-gray-700 font-semibold py-2 px-4 border border-gray-400 rounded shadow" on:click="{window.open(modalContents.grBookLink, "_blank")}">By Book Title</button>
 					<button class="bg-white hover:bg-green-200 text-gray-700 font-semibold py-2 px-4 border border-gray-400 rounded shadow" on:click="{window.open(modalContents.grAuthorLink, "_blank")}">By Author</button>
 				</div>
-				{#if modalContents.facts.length > 0}
+				{#if modalContents.facts}
 					<p class="pt-5 text-sm text-gray-700 font-extrabold">Open Library Facts</p>
-					{#if modalContents.facts[0].first_publish_year}
+					{#if modalContents.facts.first_publish_year}
 						<p>
-							First Published in <span class="font-extrabold">{modalContents.facts[0].first_publish_year}</span>
+							First Published in <span class="font-extrabold">{modalContents.facts.first_publish_year}</span>
 						</p>
 					{/if}
-					{#if modalContents.facts[0].publish_place && modalContents.facts[0].publish_place?.length < 6}
+					{#if modalContents.facts.publish_place && modalContents.facts.publish_place?.length < 6}
 						<p>
-							Places Published: <span class="font-extrabold">{modalContents.facts[0].publish_place}</span>
+							Places Published: <span class="font-extrabold">{modalContents.facts.publish_place}</span>
 						</p>
 					{/if}
-					{#if modalContents.facts[0].language && modalContents.facts[0].language?.length > 1}
+					{#if modalContents.facts.language && modalContents.facts.language?.length > 1}
 						<p>Available
-							in <span class="font-extrabold">{modalContents.facts[0].language.length} languages</span>
+							in <span class="font-extrabold">{modalContents.facts.language.length} languages</span>
 						</p>
 					{/if}			
 					
-					{#if modalContents.facts[0].publisher && modalContents.facts[0].publisher?.length < 6}
+					{#if modalContents.facts.publisher && modalContents.facts.publisher?.length < 6}
 						<p class="pt-5 text-kumquats">Publishers</p>
-						<span>{modalContents.facts[0].publisher.join(', ')}</span>
+						<span>{modalContents.facts.publisher.join(', ')}</span>
 					{:else}
-						<p class="pt-5 text-kumquats">>{(Math.ceil(modalContents.facts[0].publisher.length / 10) * 10)} Publishers!</p>
+						<p class="pt-5 text-kumquats">>{(Math.ceil(modalContents.facts.publisher.length / 10) * 10)} Publishers!</p>
 					{/if}
 				{/if}
 				{#if modalContents.history.length > 0}
@@ -204,7 +225,13 @@
 				{#if modalContents.reviews.length > 0}
 					<p class="pt-5 text-sm text-gray-700 font-extrabold">NYT Reviews</p>
 					{#each modalContents.reviews as review}
-						<p><a href="{review.url}" target="_blank">{review.publication_dt}</a></p>
+						<p><a href="{review.url}" target="_blank" class="inline-flex">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+								<path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+								<path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+							</svg>&nbsp;
+							{review.publication_dt}
+						</a></p>
 					{/each}
 				{/if}
 			{/if}
