@@ -9,7 +9,7 @@
 	const books = {};
 
 	onMount(async () => {
-		fetch(`https://la-paix.herokuapp.com/kumquats`)
+		fetch(`https://la-paix.onrender.com/kumquats`)
 			.then(response => { 
 				if(response.ok) return response.json();
 			}).then(json => {
@@ -141,9 +141,9 @@
 			{#if books.allThisYear}
 				{#each (books.allThisYear) as book}
 					{#if book.queue == "yes"}
-						<li on:click="{handleModal(book.title, book.author)}" class="border-solid border-1 border-gray-700 py-2 pl-2 shadow-md mb-2 sm:mb-3 lg:mb-1 font-bold text-kumquat cursor-pointer hover:text-kumquats">{book.title}</li>
+						<li on:click="{handleModal(book.title, book.author)}" on:keyup="{handleModal(book.title, book.author)}" class="border-solid border-1 border-gray-700 py-2 pl-2 shadow-md mb-2 sm:mb-3 lg:mb-1 font-bold text-kumquat cursor-pointer hover:text-kumquats">{book.title}</li>
 					{:else}
-						<li on:click="{handleModal(book.title, book.author)}" class="border-solid border-1 border-gray-700 py-2 pl-2 shadow-md mb-2 sm:mb-3 lg:mb-1 cursor-pointer hover:text-kumquats">{book.title}</li>
+						<li on:click="{handleModal(book.title, book.author)}" on:keyup="{handleModal(book.title, book.author)}"class="border-solid border-1 border-gray-700 py-2 pl-2 shadow-md mb-2 sm:mb-3 lg:mb-1 cursor-pointer hover:text-kumquats">{book.title}</li>
 					{/if}
 				{/each}
 			{/if}
@@ -159,11 +159,11 @@
 		{#if books.allByYears}
 			{#each (books.allByYears) as year}
 			<div class="border-solid border-2 border-gray-700 py-2 shadow-lg rounded-xl cursor-pointer">
-				<h6 class="py-2" id="{year.year}" on:click={show(year.year)}>
+				<h6 class="py-2" id="{year.year}" on:click={show(year.year)} on:keyup={show(year.year)}>
 					{year.count} books in <span class="font-extrabold">{year.year}</span></h6>
 				<ul class="list-none list-inside text-left hidden" id="list{year.year}">
 				{#each year.books as book}
-					<li on:click="{handleModal(book.title, book.author)}" class="border-solid border-2 border-gray-200 py-2 pl-2 cursor-pointer hover:text-kumquats motion-safe:animate-bounce shadow-inner" id="{year.year}{book.title}">
+					<li on:click="{handleModal(book.title, book.author)}" on:keyup="{handleModal(book.title, book.author)}" class="border-solid border-2 border-gray-200 py-2 pl-2 cursor-pointer hover:text-kumquats motion-safe:animate-bounce shadow-inner" id="{year.year}{book.title}">
 						{book.title} <small class="text-kumquats"><em>by <strong>{book.author}</strong></em></small>
 					</li>
 				{/each}
@@ -187,8 +187,8 @@
 			{:else}
 				<div class="pt-2 pb-1">
 					<p class="text-sm text-gray-700 font-extrabold">Open GoodReads Search</p>
-					<button class="bg-white hover:bg-green-200 text-gray-700 font-semibold py-2 px-4 border border-gray-400 rounded shadow" on:click="{window.open(modalContents.grBookLink, "_blank")}">By Book Title</button>
-					<button class="bg-white hover:bg-green-200 text-gray-700 font-semibold py-2 px-4 border border-gray-400 rounded shadow" on:click="{window.open(modalContents.grAuthorLink, "_blank")}">By Author</button>
+					<button class="bg-white hover:bg-green-200 text-gray-700 font-semibold py-2 px-4 border border-gray-400 rounded shadow" on:click="{window.open(modalContents.grBookLink, "_blank")}" on:keyup="{window.open(modalContents.grBookLink, "_blank")}">By Book Title</button>
+					<button class="bg-white hover:bg-green-200 text-gray-700 font-semibold py-2 px-4 border border-gray-400 rounded shadow" on:click="{window.open(modalContents.grAuthorLink, "_blank")}" on:keyup="{window.open(modalContents.grAuthorLink, "_blank")}">By Author</button>
 				</div>
 				{#if modalContents.facts}
 					<p class="pt-5 text-sm text-gray-700 font-extrabold">Open Library Facts</p>
@@ -225,7 +225,7 @@
 				{#if modalContents.reviews.length > 0}
 					<p class="pt-5 text-sm text-gray-700 font-extrabold">NYT Reviews</p>
 					{#each modalContents.reviews as review}
-						<p><a href="{review.url}" target="_blank" class="inline-flex">
+						<p><a href="{review.url}" target="_blank" class="inline-flex" rel="noreferrer">
 							<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
 								<path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
 								<path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
